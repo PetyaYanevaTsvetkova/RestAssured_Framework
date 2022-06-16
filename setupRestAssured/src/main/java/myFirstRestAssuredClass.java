@@ -11,15 +11,6 @@ public class myFirstRestAssuredClass {
         getResponseBody();
     }
 
-
-    private static void authentication() {
-        System.out.println(RestAssured.given()
-                .auth()
-                .basic("username", "password")
-                .when().get()
-                .getHeader("Server"));
-    }
-
     private static void getResponseHeader() {
         System.out.println(RestAssured
                 .given()
