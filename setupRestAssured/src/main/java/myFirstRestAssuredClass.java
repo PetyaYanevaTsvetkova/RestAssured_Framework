@@ -1,14 +1,48 @@
 import io.restassured.RestAssured;
 import io.restassured.http.Header;
+import io.restassured.response.Response;
 
 public class myFirstRestAssuredClass {
-    final static String URL = "https://www.abv.bg/";
+    final static String URL = "https://api.publicapis.org/";
 
     public static void main(String[] args) {
+        RestAssured.baseURI = URL;
+
         getResponseStatus();
+
         getResponseHeaders();
+
         getResponseHeader();
-        getResponseBody();
+
+        Response responseBody = getResponseBodyAll();
+        System.out.println(responseBody.body().prettyPrint());
+
+        Response requestWithParams = getRequestWithParams();
+        requestWithParams.body().prettyPrint();
+
+        Response responseBodyJSON = getResponseBodyJSON();
+        //responseBodyJSON.body().print();
+        responseBodyJSON.body().prettyPrint();
+    }
+
+    private static Response getResponseBodyJSON() {
+        return RestAssured
+                .given()
+                .header("Content-type", "application/json")
+                .headers("Server", "Tomcat")
+                .when()
+                .get("categories");
+    }
+
+    private static Response getRequestWithParams() {
+        return RestAssured.given()
+                .with()
+                .queryParam("title", "cat")
+                .queryParam("description", "Rwanda")
+                //.queryParam("auth", "apiKey")
+                //.queryParam("https", "true")
+                .when()
+                .get("entries");
     }
 
     private static void getResponseHeader() {
@@ -16,7 +50,7 @@ public class myFirstRestAssuredClass {
                 .given()
                 .when()
                 .get(URL)
-                .getHeader("Server"));
+                .getHeader("Content-Type"));
     }
 
     private static void getResponseHeaders() {
@@ -39,14 +73,10 @@ public class myFirstRestAssuredClass {
         RestAssured.given().when().get(URL).then().assertThat().statusCode(200);
     }
 
-    public static void getResponseBody() {
-        System.out.println(RestAssured
+    public static Response getResponseBodyAll() {
+        return RestAssured
                 .given()
                 .when()
-                .get(URL)
-                .then()
-                .log()
-                .body()
-                .toString());
+                .get("entries");
     }
 }
